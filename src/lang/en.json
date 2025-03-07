@@ -1,0 +1,6 @@
+{
+  "Message1": "You have picked up {white}{0} {bluegrey}gift from {lightpurple}{1}",
+  "Message2": "Your gift {white}{0} {bluegrey}has been picked up by {lightpurple}{1}",
+  "Message3": "{lightpurple}{0} {bluegrey}has dropped a gift {white}{1}",
+  "Message4": "The gift {white}{0} {bluegrey}has been picked up by {lightpurple}{1}"
+}
