@@ -15,7 +15,14 @@ public static class Utils
 
     public static bool HasPermission(CCSPlayerController player)
     {
-        return config.Permission.Any(perm => AdminManager.PlayerHasPermissions(player, perm) || AdminManager.PlayerInGroup(player, perm));
+        foreach (string perm in config.Permission)
+        {
+            if (perm.StartsWith("@") && AdminManager.PlayerHasPermissions(player, perm))
+                return true;
+            if (perm.StartsWith("#") && AdminManager.PlayerInGroup(player, perm))
+                return true;
+        }
+        return false;
     }
 
     public static void PrintToChat(CCSPlayerController player, string message)
