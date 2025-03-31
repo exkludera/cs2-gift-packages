@@ -7,14 +7,14 @@ public class GiftPackage
     public bool Announce { get; set; }
     public bool Quiet { get; set; }
     public string SoundEvent { get; set; } = "";
-    public string[] Command { get; set; } = [];
+    public List<string> Command { get; set; } = [];
 }
 
 public class Config : BasePluginConfig
 {
     public string Prefix { get; set; } = "{Magenta}[Gifts]{bluegrey}";
-    public string[] Permission { get; set; } = [ "@css/root", "#css/admin" ];
-    public string[] Command { get; set; } = [ "css_giftpackage", "css_giftmenu" ];
+    public List<string> Permission { get; set; } = [ "@css/root", "#css/admin" ];
+    public List<string> Command { get; set; } = [ "css_giftpackage", "css_giftmenu" ];
     public List<GiftPackage> Gifts { get; set; } = new List<GiftPackage>
     {
         new GiftPackage

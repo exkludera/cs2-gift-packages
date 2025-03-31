@@ -2,7 +2,6 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 using System.Runtime.InteropServices;
@@ -33,17 +32,6 @@ public static class Utils
     public static void PrintToChatAll(string message)
     {
         Server.PrintToChatAll($" {config.Prefix} {message}");
-    }
-
-    private static MemoryFunctionVoid<CBaseEntity, string, int, float, float> CBaseEntity_EmitSoundParamsFunc = new(GameData.GetSignature("CBaseEntity_EmitSoundParams"));
-    public static void EmitSound(this CBaseEntity entity, string soundEventName, float volume = 1f, int pitch = 1, float delay = 1f)
-    {
-        if (entity is null
-        || entity.IsValid is not true
-        || string.IsNullOrEmpty(soundEventName) is true
-        || CBaseEntity_EmitSoundParamsFunc is null) return;
-
-        CBaseEntity_EmitSoundParamsFunc.Invoke(entity, soundEventName, pitch, volume, delay);
     }
 
     public static string Replace(string input, CCSPlayerController player, CCSPlayerController gifter)
