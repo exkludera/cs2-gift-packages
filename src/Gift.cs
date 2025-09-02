@@ -1,7 +1,10 @@
-﻿using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using CS2TraceRay.Class;
+using CS2TraceRay.Enum;
+using CS2TraceRay.Struct;
 
 public partial class Plugin
 {
@@ -19,10 +22,7 @@ public partial class Plugin
         entity.SetModel(gift.Model);
         entity.DispatchSpawn();
 
-        entity.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
-        entity.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
-        Utilities.SetStateChanged(entity, "CCollisionProperty", "m_CollisionGroup");
-        Utilities.SetStateChanged(entity, "VPhysicsCollisionAttribute_t", "m_nCollisionGroup");
+        entity.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_WEAPON;
 
         if (Throw)
         {
@@ -53,16 +53,16 @@ public partial class Plugin
         }
         else
         {
-            Vector position = new Vector(pawn.AbsOrigin!.X, pawn.AbsOrigin.Y, pawn.AbsOrigin.Z + pawn.CameraServices?.OldPlayerViewOffsetZ);
-
-            var hitPoint = Utils.TraceShape(position, pawn.EyeAngles);
-            if (hitPoint == null)
+            CGameTrace? trace = TraceRay.TraceShape(gifter.GetEyePosition()!, pawn.EyeAngles, TraceMask.MaskShot, gifter);
+            if (trace == null || !trace.HasValue || trace.Value.Position.Length() == 0)
             {
                 Utils.PrintToChat(gifter, $"{ChatColors.Red}Could not find a valid location to spawn gift");
                 return;
             }
 
-            entity.Teleport(hitPoint, gifter.AbsRotation);
+            var endPos = trace.Value.Position;
+
+            entity.Teleport(new(endPos.X, endPos.Y, endPos.Z), gifter.AbsRotation);
         }
 
         var trigger = CreateTrigger(entity);
@@ -77,18 +77,19 @@ public partial class Plugin
     {
         var trigger = Utilities.CreateEntityByName<CTriggerMultiple>("trigger_multiple")!;
 
-        trigger.Entity!.Name = pack.Entity!.Name + "_trigger";
         trigger.Spawnflags = 1;
+        trigger.Entity!.Name = pack.Entity!.Name + "_trigger";
         trigger.CBodyComponent!.SceneNode!.Owner!.Entity!.Flags &= ~(uint)(1 << 2);
-        trigger.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
+
         trigger.Collision.SolidFlags = 0;
-        trigger.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_TRIGGER;
+        trigger.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
         trigger.SetModel(pack.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.ModelName);
         trigger.Teleport(pack.AbsOrigin, pack.AbsRotation);
         trigger.DispatchSpawn();
-        trigger.AcceptInput("FollowEntity", pack, trigger, "!activator");
-        trigger.AcceptInput("Enable");
+        trigger.AcceptInput("SetParent", pack, trigger, "!activator");
+
+        trigger.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_TRIGGER;
 
         return trigger;
     }

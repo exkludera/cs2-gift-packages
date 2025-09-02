@@ -3,4 +3,4 @@
 **/bin
 src/Properties/PublishProfiles/FolderProfile.pubxml.user
 src/Properties/PublishProfiles/FolderProfile.pubxml
-src/BlockMaker.csproj.user
+src/GiftPackages.csproj.user
